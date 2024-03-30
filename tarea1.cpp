@@ -35,7 +35,7 @@ struct Jugadas {
 };
 
 /*****
-*Puntero_del_tipo_Tablero guardar_tablero
+* Puntero_del_tipo_Tablero guardar_tablero
 ******
 * Crear un nuevo objeto del tipo "Tablero" al que se le asigna memoria dinámica
 según la cantidad de piezas encontadas en el tablero. A las cuales se les asigna
@@ -67,6 +67,25 @@ Tablero guardar_tablero(int numero_piezas, string *texto) {
   }
   return tablero;
 }
+
+
+/*****
+* Puntero_del_tipo_Jugdas posibles_jugadas
+******
+* Para caaada nueva pieza que entre en esta función, tomamos su coordenada y la volvemos un numero no mayor a 87
+con esto obtenemos su posición actual, por ejemplo, si una pieza esta en la 3ra fila 2do espacio en nuestro codigo sería
+la poscición 31. Ya con esta posción inicial y dependiendo de cual pieza sea determinamos cada unaa de sus posibles jugadas
+teniendo en cuenta que si las casillas por las que va a pasar ya están ocupadas no las guarde. De este modo tenemos una 
+clase de mapeado de cada posible movimiento.
+******
+* Input:
+* struct *piezas: Nos entrega la pieza a trabajar.
+* struct *tablero: Es la información de las posiciones que obtuvimos en la funcion "guardar_tablero".
+******
+* Returns:
+* Retorna un puntero del tipo Jugadas, el cual tiene la informacion de cada
+pieza, sus posibles jugdas, y la caaantidad de jugadas que puede hacer.
+*****/
 
 Jugadas posibles_jugadas(Pieza *piezas, Tablero *tablero) {
   Jugadas jugadas;
@@ -549,8 +568,26 @@ Jugadas posibles_jugadas(Pieza *piezas, Tablero *tablero) {
   return jugadas;
 }
 
-bool tableroEnJaqueMate(Tablero *tablero, int numero_piezas,
-                        Jugadas *jugadas_piezas) {
+
+/*****
+* Funcion booleana tableroEnJaqueMate.
+******
+* Desempaquetamos todas las jugadas de Ton y Sebas por separado, y las guardamos en sus respectivos arreglos.
+Luego de esto recorremos cada arreglo para ver si existen coincidencias entre las posibles jugadas del rey de Ton
+y las jugadas de las ppiezaaas de Sebas. Si la coincidencia existe, cambiamos el valor de la jugada del rey de Ton
+(para evitar que se repitan coincidencias) y sumamos 1 al contador de coincidencias. Finalmente si el contador de
+coincidencias es igual a la cantidad de posibles jugadas que puede hacer el rey de Ton es una situación de jaque mate.
+******
+* Input:
+* int numero_piezas: Nos entrega la cantidad de piezas que hay en el tablero.
+* struct *jugadas_piezas: Es la información de las posibles jugadas de todas las piezas en el tablero que obtuvimos
+en la función "posibles_jugadas".
+******
+* Returns:
+* Retorna un valor booleano que en caso de que el tablero esté en jaque mate sera verdad.
+*****/
+
+bool tableroEnJaqueMate(int numero_piezas, Jugadas *jugadas_piezas) {
   bool jaque_mate = false;
   char comparacion = 'X';
   int tamanio_ton = 0;
@@ -564,7 +601,6 @@ bool tableroEnJaqueMate(Tablero *tablero, int numero_piezas,
       pos_ton = i;
       tamanio_ton = jugadas_piezas[i].tamanio;
     } else {
-      //cout << d << endl;
       posiciones_sebas[d] = d;
       tamanio_sebas += jugadas_piezas[i].tamanio;
     }
@@ -577,7 +613,6 @@ bool tableroEnJaqueMate(Tablero *tablero, int numero_piezas,
 
   int m = 0;
   for (int i = 0; i < tamanio_ton; i++) {
-    cout <<"es jugada: "<< jugadas_piezas[pos_ton].movimientos_finales[i] << " en esta posicion: "<< m << endl;
     jugadas_ton[m] = jugadas_piezas[pos_ton].movimientos_finales[i];
     m++;
   }
@@ -610,8 +645,10 @@ bool tableroEnJaqueMate(Tablero *tablero, int numero_piezas,
   return jaque_mate;
 }
 
+
+
+
 int main() {
-  cout << "Wenas" << endl;
   ifstream archivo("tablero.txt");
   for (int i = 0; i < 9; i++) {
     getline(archivo, texto[i]);
@@ -627,7 +664,7 @@ int main() {
     jugadas_piezas[i] = posibles_jugadas(&mini_pieza, &tablero);
   }
 
-  bool veredicto = tableroEnJaqueMate(&tablero, numero_piezas, jugadas_piezas);
+  bool veredicto = tableroEnJaqueMate( numero_piezas, jugadas_piezas);
 
   if (veredicto) {
     cout << "Si" << endl;
